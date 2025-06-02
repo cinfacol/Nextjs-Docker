@@ -1,0 +1,29 @@
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: ./docker/local/nextjs/Dockerfile
+    container_name: nextjs
+    environment:
+      - TZ=America/Bogota
+    volumes:
+      - .:/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env.local
+  
+  nginx:
+    depends_on:
+      - nextjs
+    container_name: nginx-nextjs
+    environment:
+      - TZ=America/Bogota
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
